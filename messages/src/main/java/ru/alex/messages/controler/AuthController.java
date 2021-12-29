@@ -1,5 +1,6 @@
 package ru.alex.messages.controler;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -37,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody UserDto requestDto) {
+    public ResponseEntity<Map> authenticate(@Valid @RequestBody UserDto requestDto) {
         try {
             String name = requestDto.getName();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(name, requestDto.getPassword()));
@@ -65,8 +66,12 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public UserDto registration(@Valid @RequestBody UserDto unRegisteredUser) {
-        unRegisteredUser = userService.registration(unRegisteredUser);
-        return unRegisteredUser;
+    public ResponseEntity<UserDto> registration(@Valid @RequestBody UserDto unRegisteredUser) {
+        try {
+            unRegisteredUser = userService.registration(unRegisteredUser);
+        } catch (BadCredentialsException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(unRegisteredUser);
     }
 }

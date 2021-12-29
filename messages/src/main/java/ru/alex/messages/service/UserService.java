@@ -1,5 +1,6 @@
 package ru.alex.messages.service;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,7 +46,7 @@ public class UserService implements UserDetailsService {
 
         User user = userRepository.findByNameIgnoreCase(userDto.getName());
         if (user != null) {
-            return null;
+            throw new BadCredentialsException("User " + userDto.getName() + " existed.");
         }
         user = new User(userDto.getName(), passwordEncoder.encode(userDto.getPassword()));
         userRepository.saveAndFlush(user);

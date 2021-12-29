@@ -4,9 +4,9 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class UserDto {
+public class MessageDto {
     @NotEmpty
-    private String name;
+    String name;
     @NotEmpty
-    private String password;
+    String message;
 }
